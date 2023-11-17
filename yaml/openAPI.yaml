@@ -1,30 +1,59 @@
 openapi: 3.0.3
 info:
-  title: Dokumen API Cloud Function GIS
-  version: 3.0.3
-  description: Dokumen API Cloud Function GIS
+  title: Dokumen API Cloud Function GIS- OpenAPI 3.0
+  description: >-
+    Dokumentasi API untuk Matakuliah GIS
   termsOfService: https://github.com/gisdip5
   contact:
     email: ardiva.diva30@gmail.com
-    name: Ardiva Putri Tava
   license:
-    name: Backend Package
-    url: https://pkg.go.dev/github.com/Ardivadiva/godip
+    name: GCF Package
+    url: https://pkg.go.dev/github.com/gisdip5/gisgeobackend
+  version: 1.0.11
+externalDocs:
+  description: Swagger
+  url: https://gisdip5.github.io/swagger/
 servers:
-  - url: https://asia-southeast2-modular-bucksaw-401904.cloudfunctions.net/
+  - url: https://asia-southeast2-modular-bucksaw-401904.cloudfunctions.net
 tags:
   - name: auth
     description: Authentikasi
     externalDocs:
       description: Deskripsi dan Kode Program
-      url: https://pkg.go.dev/github.com/Ardivadiva/godip
+      url: https://github.com/gisdip5/gisgeobackend
+  - name: register
+    description: Register Account
+    externalDocs:
+      description: Deskripsi dan Kode Program
+      url: https://github.com/gisdip5/gisgeobackend
   - name: data
     description: Data Untuk akses GIS
     externalDocs:
       description: Deskripsi dan Kode Program
-      url: https://pkg.go.dev/github.com/Ardivadiva/godip
+      url: https://github.com/gisdip5/gisgeobackend
 paths:
-  /login:
+  /registergeogis:
+    post:
+      tags:
+        - register
+      summary: Register User Without Token
+      description: Daftar Akun User
+      operationId: authService
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/user"
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+        "405":
+          description: Invalid input
+  /logingeogis:
     post:
       tags:
         - auth
@@ -45,33 +74,33 @@ paths:
                 $ref: "#/components/schemas/AuthResponse"
         "405":
           description: Invalid input
-  /insertdata:
-    post:
+  /updategeogis:
+    put:
       tags:
         - data
-      summary: Insert Data Geo
-      description: Insert data nama by volume geo
+      summary: Update data geo
+      description: Update data nama by volume geo
       operationId: authService
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/InsertData"
+              $ref: "#/components/schemas/bodycord"
       responses:
         "200":
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResponseInsert"
+                $ref: "#/components/schemas/Response"
         "405":
           description: Invalid input
       security:
-        - token:
+        - Login:
             - write:apiKey
             - read:apiKey
 
-  /function-2:
+  /getallgeo:
     get:
       tags:
         - data
@@ -90,65 +119,22 @@ paths:
         "400":
           description: Invalid status value
       security:
-        - token:
-            - write:apiKey
-            - read:apiKey
-  /updatedata:
-    put:
-      tags:
-        - data
-      summary: Update Data Geo
-      description: Update data nama by volume
-      operationId: authService
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/bodycord"
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResponseUpdate"
-        "405":
-          description: Invalid input
-      security:
-        - token:
+        - Login:
             - write:apiKey
             - read:apiKey
 
-  /deletedata:
-    delete:
-      tags:
-        - data
-      summary: Delete Data Geo
-      description: Delete Data Geo by nama
-      operationId: DeleteData
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ReqData"
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Data"
-        "400":
-          description: Invalid status value
-      security:
-        - token:
-            - write:apiKey
-            - read:apiKey
 components:
   schemas:
-    ResponseInsert:
+    user:
+      type: object
+      properties:
+        username:
+          type: string
+          example: cob
+        password:
+          type: string
+          example: cob
+    Response:
       type: object
       properties:
         status:
@@ -156,8 +142,8 @@ components:
           example: true
         message:
           type: string
-          example: Berhasil Input Data
-    ResponseUpdate:
+          example: Berhasil Input data
+    responseUser:
       type: object
       properties:
         status:
@@ -165,93 +151,52 @@ components:
           example: true
         message:
           type: string
-          example: Berhasil Update Data
+          example: berhasil ambil data
+        data:
+          type: object
+          properties:
+            username:
+              type: string
+              example: cob
+            password:
+              type: string
+              example: hashed password
+            role:
+              type: string
+              example: user
     Auth:
       type: object
       properties:
         username:
           type: string
-          example: dipola
+          example: cob
         password:
           type: string
-          example: cobain
-    InsertData:
-      type: object
-      properties:
-        type:
-          type: string
-          example: Point
-        name:
-          type: string
-          example: dipola
-        volume:
-          type: string
-          example: coba
+          example: cob
     bodycord:
       type: object
       properties:
         type:
           type: string
-          example: Point
+          example: polygon
         name:
           type: string
-          example: cobadong
+          example: cob
         volume:
           type: string
-          example: cobadongg
+          example: "1"
     AuthResponse:
       type: object
       properties:
         status:
           type: bool
           example: false
+        message:
+          type: string
+          example: Selamat Datang
         token:
           type: string
-          example: false
-        message:
-          type: string
-          example: false
-    responseUser:
-      type: object
-      properties:
-        status:
-          type: bool
-          example: bener
-        message:
-          type: string
-          example: berhasil ambill data
-        data:
-          type: object
-          properties:
-            geometry:
-              type: string
-              example: "dipola"
-            properties:
-              type: string
-              example: "32"
-
-    ReqData:
-      type: object
-      properties:
-        type:
-          type: string
-          example: Point
-        name:
-          type: string
-          example: cobadong
-        volume:
-          type: string
-          example: cobadongg
-
-    Data:
-      type: object
-      properties:
-        status:
-          type: bool
-          example: benar
-        message:
-          type: string
-          example: Berhasil menghapus data
+          example: cob
   requestBodies:
     AuthReq:
       description: Request Authentication
@@ -259,7 +204,7 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/Auth"
-    DataArray:
+    UserArray:
       description: List of user object
       content:
         application/json:
@@ -268,7 +213,7 @@ components:
             items:
               $ref: "#/components/schemas/AuthResponse"
   securitySchemes:
-    token:
+    Login:
       type: apiKey
-      name: token
+      name: Login
       in: header
