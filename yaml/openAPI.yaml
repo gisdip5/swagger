@@ -1,0 +1,274 @@
+openapi: 3.0.3
+info:
+  title: Dokumen API Cloud Function GIS
+  version: 3.0.3
+  description: Dokumen API Cloud Function GIS
+  termsOfService: https://github.com/gisdip5
+  contact:
+    email: ardiva.diva30@gmail.com
+    name: Ardiva Putri Tava
+  license:
+    name: Backend Package
+    url: https://pkg.go.dev/github.com/Ardivadiva/godip
+servers:
+  - url: https://asia-southeast2-modular-bucksaw-401904.cloudfunctions.net/
+tags:
+  - name: auth
+    description: Authentikasi
+    externalDocs:
+      description: Deskripsi dan Kode Program
+      url: https://pkg.go.dev/github.com/Ardivadiva/godip
+  - name: data
+    description: Data Untuk akses GIS
+    externalDocs:
+      description: Deskripsi dan Kode Program
+      url: https://pkg.go.dev/github.com/Ardivadiva/godip
+paths:
+  /login:
+    post:
+      tags:
+        - auth
+      summary: Login get Token
+      description: Login and Get User Token
+      operationId: authService
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Auth"
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "405":
+          description: Invalid input
+  /insertdata:
+    post:
+      tags:
+        - data
+      summary: Insert Data Geo
+      description: Insert data nama by volume geo
+      operationId: authService
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InsertData"
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseInsert"
+        "405":
+          description: Invalid input
+      security:
+        - token:
+            - write:apiKey
+            - read:apiKey
+
+  /function-2:
+    get:
+      tags:
+        - data
+      summary: Get Data Geojson
+      description: Header auth
+      operationId: GetdataGeojson
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/responseUser"
+        "400":
+          description: Invalid status value
+      security:
+        - token:
+            - write:apiKey
+            - read:apiKey
+  /updatedata:
+    put:
+      tags:
+        - data
+      summary: Update Data Geo
+      description: Update data nama by volume
+      operationId: authService
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/bodycord"
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseUpdate"
+        "405":
+          description: Invalid input
+      security:
+        - token:
+            - write:apiKey
+            - read:apiKey
+
+  /deletedata:
+    delete:
+      tags:
+        - data
+      summary: Delete Data Geo
+      description: Delete Data Geo by nama
+      operationId: DeleteData
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReqData"
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Data"
+        "400":
+          description: Invalid status value
+      security:
+        - token:
+            - write:apiKey
+            - read:apiKey
+components:
+  schemas:
+    ResponseInsert:
+      type: object
+      properties:
+        status:
+          type: bool
+          example: true
+        message:
+          type: string
+          example: Berhasil Input Data
+    ResponseUpdate:
+      type: object
+      properties:
+        status:
+          type: bool
+          example: true
+        message:
+          type: string
+          example: Berhasil Update Data
+    Auth:
+      type: object
+      properties:
+        username:
+          type: string
+          example: dipola
+        password:
+          type: string
+          example: cobain
+    InsertData:
+      type: object
+      properties:
+        type:
+          type: string
+          example: Point
+        name:
+          type: string
+          example: dipola
+        volume:
+          type: string
+          example: coba
+    bodycord:
+      type: object
+      properties:
+        type:
+          type: string
+          example: Point
+        name:
+          type: string
+          example: cobadong
+        volume:
+          type: string
+          example: cobadongg
+    AuthResponse:
+      type: object
+      properties:
+        status:
+          type: bool
+          example: false
+        token:
+          type: string
+          example: false
+        message:
+          type: string
+          example: false
+    responseUser:
+      type: object
+      properties:
+        status:
+          type: bool
+          example: bener
+        message:
+          type: string
+          example: berhasil ambill data
+        data:
+          type: object
+          properties:
+            geometry:
+              type: string
+              example: "dipola"
+            properties:
+              type: string
+              example: "32"
+
+    ReqData:
+      type: object
+      properties:
+        type:
+          type: string
+          example: Point
+        name:
+          type: string
+          example: cobadong
+        volume:
+          type: string
+          example: cobadongg
+
+    Data:
+      type: object
+      properties:
+        status:
+          type: bool
+          example: benar
+        message:
+          type: string
+          example: Berhasil menghapus data
+  requestBodies:
+    AuthReq:
+      description: Request Authentication
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Auth"
+    DataArray:
+      description: List of user object
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/AuthResponse"
+  securitySchemes:
+    token:
+      type: apiKey
+      name: token
+      in: header
