@@ -193,7 +193,7 @@ components:
           example: false
         message:
           type: string
-          example: Selamat Datang
+          example: Welcomes
         token:
           type: string
           example: cob
